@@ -1,5 +1,9 @@
-import express from 'express'
+import express, { NextFunction, Request, Response } from 'express'
 import next from 'next'
+import { json } from 'body-parser'
+import { createUser } from './user/create'
+import { getUser, getUsers } from './user/read'
+import { User } from './user/User'
 
 const port = parseInt(process.env.PORT ?? '3000', 10)
 const dev = process.env.NODE_ENV !== 'production'
@@ -9,9 +13,46 @@ const handle = app.getRequestHandler()
 app.prepare().then(() => {
   const server = express()
 
+  server.use(json())
+
+  server.get('/users', async (_req, res, next) => {
+    try {
+      res.json(await getUsers())
+    } catch (err) {
+      next(err)
+    }
+  })
+
+  server.get('/user/:userId', async (req, res, next) => {
+    try {
+      const userId = parseInt(req.params.userId)
+      if (isNaN(userId)) return next(new Error('User id cannot be parsed'))
+
+      res.json(await getUser(userId))
+    } catch (err) {
+      next(err)
+    }
+  })
+
+  server.put('/user', async (req, res, next) => {
+    console.log(req.params)
+    try {
+      const data: User = (req.params as unknown) as User
+      res.json(await createUser(data))
+    } catch (err) {
+      next(err)
+    }
+  })
+
   server.all('*', (req, res) => {
     return handle(req, res)
   })
+
+  server.use(
+    (err: Error, _req: Request, res: Response, _next: NextFunction) => {
+      res.status(500).send(err.message)
+    }
+  )
 
   server.listen(port, () => {
     console.log(`> Ready on http://localhost:${port}`)

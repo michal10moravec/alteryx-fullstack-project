@@ -1,8 +1,6 @@
+import { User } from '../backend/user/User'
 import { AnyAction, Reducer } from 'redux'
-
-interface User extends Form {
-  id: number
-}
+import * as types from './types'
 
 export interface Form {
   firstName: string
@@ -13,6 +11,8 @@ export interface Form {
 
 export interface GlobalState {
   form: Form
+  status: 'INIT' | 'LOADING' | 'SUCCESS' | 'ERROR'
+  error: string
   users: User[]
 }
 
@@ -23,6 +23,8 @@ export const initialState: GlobalState = {
     email: '',
     password: ''
   },
+  status: 'INIT',
+  error: '',
   users: []
 }
 
@@ -31,12 +33,29 @@ export const reducer: Reducer<GlobalState, AnyAction> = (
   { type, payload }
 ) => {
   switch (type) {
-    case 'CHANGE_FORM_INPUT':
+    case types.DATA_LOADING:
+      return {
+        ...state,
+        status: 'LOADING'
+      }
+    case types.DATA_SUCCESS:
+      return {
+        ...state,
+        status: 'SUCCESS',
+        users: payload
+      }
+    case types.DATA_ERROR:
+      return {
+        ...state,
+        status: 'ERROR',
+        error: payload
+      }
+    case types.CHANGE_FORM_INPUT:
       return {
         ...state,
         form: { ...state.form, [payload.fieldName]: payload.value }
       }
-    case 'RESET':
+    case types.RESET:
       return {
         ...initialState
       }

@@ -1,2 +1,6 @@
+export const DATA_INIT = 'DATA_INIT'
+export const DATA_LOADING = 'DATA_LOADING'
+export const DATA_SUCCESS = 'DATA_SUCCESS'
+export const DATA_ERROR = 'DATA_ERROR'
 export const CHANGE_FORM_INPUT = 'CHANGE_FORM_INPUT'
 export const RESET = 'RESET'
