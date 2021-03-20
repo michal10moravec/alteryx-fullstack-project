@@ -33,22 +33,28 @@ export const reducer: Reducer<GlobalState, AnyAction> = (
   { type, payload }
 ) => {
   switch (type) {
-    case types.DATA_LOADING:
+    case types.LOADING:
       return {
         ...state,
         status: 'LOADING'
       }
-    case types.DATA_SUCCESS:
+    case types.ERROR:
+      return {
+        ...state,
+        status: 'ERROR',
+        error: payload
+      }
+    case types.LOAD_USERS_SUCCESS:
       return {
         ...state,
         status: 'SUCCESS',
         users: payload
       }
-    case types.DATA_ERROR:
+    case types.CREATE_USER_SUCCESS:
       return {
         ...state,
-        status: 'ERROR',
-        error: payload
+        status: 'SUCCESS',
+        users: [...state.users, payload]
       }
     case types.CHANGE_FORM_INPUT:
       return {

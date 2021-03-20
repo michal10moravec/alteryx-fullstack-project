@@ -1,23 +1,53 @@
 import { Action } from 'redux'
-import { ThunkAction } from 'redux-thunk'
+import { ThunkAction, ThunkDispatch } from 'redux-thunk'
 import { GlobalState } from './reducers'
 import * as types from './types'
 
-export const loadUsers = (): ThunkAction<
-  void,
-  GlobalState,
-  unknown,
-  Action<string>
-> => async (dispatch) => {
-  dispatch({ type: types.DATA_LOADING })
-  const response = await fetch('http://localhost:3000/users')
+const sendRequest = async (
+  endpoint: string,
+  method: 'GET' | 'PUT' | 'DELETE',
+  payload: any,
+  dispatch: ThunkDispatch<GlobalState, unknown, Action<string>>,
+  successType: string
+) => {
+  dispatch({ type: types.LOADING })
+  const response = await fetch(endpoint, {
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    method,
+    body: payload ? JSON.stringify(payload) : undefined
+  })
+
   if (response.ok && response.status === 200) {
-    const users = await response.json()
-    dispatch({ type: types.DATA_SUCCESS, payload: users })
+    const data = await response.json()
+    dispatch({ type: successType, payload: data })
   } else {
     const error = await response.text()
-    dispatch({ type: types.DATA_ERROR, payload: error })
+    dispatch({ type: types.ERROR, payload: error })
   }
+}
+
+type UserThunk = ThunkAction<void, GlobalState, unknown, Action<string>>
+
+export const getUsers = (): UserThunk => async (dispatch) => {
+  await sendRequest(
+    '/users',
+    'GET',
+    undefined,
+    dispatch,
+    types.LOAD_USERS_SUCCESS
+  )
+}
+
+export const createUser = (): UserThunk => async (dispatch, getState) => {
+  await sendRequest(
+    '/user',
+    'PUT',
+    getState().form,
+    dispatch,
+    types.CREATE_USER_SUCCESS
+  )
 }
 
 export const changeFormInput = (fieldName: string, value: string) => ({

@@ -1,6 +1,6 @@
 import express, { NextFunction, Request, Response } from 'express'
 import next from 'next'
-import { json } from 'body-parser'
+import bodyParser from 'body-parser'
 import { createUser } from './user/create'
 import { getUser, getUsers } from './user/read'
 import { User } from './user/User'
@@ -13,7 +13,7 @@ const handle = app.getRequestHandler()
 app.prepare().then(() => {
   const server = express()
 
-  server.use(json())
+  server.use(bodyParser.json())
 
   server.get('/users', async (_req, res, next) => {
     try {
@@ -35,10 +35,18 @@ app.prepare().then(() => {
   })
 
   server.put('/user', async (req, res, next) => {
-    console.log(req.params)
     try {
-      const data: User = (req.params as unknown) as User
-      res.json(await createUser(data))
+      const payload: Partial<Omit<User, 'id'>> = req.body
+      if (
+        payload.firstName &&
+        payload.lastName &&
+        payload.email &&
+        payload.password
+      ) {
+        res.json(await createUser(payload as Omit<User, 'id'>))
+      } else {
+        next(new Error('All user params have to be specified'))
+      }
     } catch (err) {
       next(err)
     }
