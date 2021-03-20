@@ -1,1 +1,1 @@
-# alteryx-fullstack-project
+# Alteryx Fullstack Project
