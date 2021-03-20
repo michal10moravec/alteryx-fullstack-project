@@ -8,9 +8,13 @@ import { AppProps } from 'next/app'
 import { ThemeProvider } from '@material-ui/core/styles'
 import CssBaseline from '@material-ui/core/CssBaseline'
 import theme from '../src/theme'
+import MainMenu from '../frontend/MainMenu'
+import { useStore } from '../redux/store'
+import { Provider } from 'react-redux'
 
-export default function MyApp(props: AppProps) {
+const MyApp = (props: AppProps) => {
   const { Component, pageProps } = props
+  const store = useStore(pageProps.initialReduxState)
 
   React.useEffect(() => {
     // Remove the server-side injected CSS.
@@ -30,10 +34,15 @@ export default function MyApp(props: AppProps) {
         />
       </Head>
       <ThemeProvider theme={theme}>
-        {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
-        <CssBaseline />
-        <Component {...pageProps} />
+        <Provider store={store}>
+          {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
+          <CssBaseline />
+          <MainMenu />
+          <Component {...pageProps} />
+        </Provider>
       </ThemeProvider>
     </React.Fragment>
   )
 }
+
+export default MyApp
