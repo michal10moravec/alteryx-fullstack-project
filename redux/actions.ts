@@ -1,3 +1,4 @@
+import { User } from '../backend/user/User'
 import { Action } from 'redux'
 import { ThunkAction, ThunkDispatch } from 'redux-thunk'
 import { GlobalState } from './reducers'
@@ -5,7 +6,7 @@ import * as types from './types'
 
 const sendRequest = async (
   endpoint: string,
-  method: 'GET' | 'PUT' | 'DELETE',
+  method: 'GET' | 'PUT' | 'POST' | 'DELETE',
   payload: any,
   dispatch: ThunkDispatch<GlobalState, unknown, Action<string>>,
   successType: string
@@ -40,13 +41,29 @@ export const getUsers = (): UserThunk => async (dispatch) => {
   )
 }
 
-export const createUser = (): UserThunk => async (dispatch, getState) => {
+export const createUser = (user: Omit<User, 'id'>): UserThunk => async (
+  dispatch
+) => {
+  await sendRequest('/user', 'PUT', user, dispatch, types.CREATE_USER_SUCCESS)
+}
+
+export const updateUser = (user: User): UserThunk => async (dispatch) => {
   await sendRequest(
-    '/user',
-    'PUT',
-    getState().form,
+    `/user/${user.id}`,
+    'POST',
+    user,
     dispatch,
-    types.CREATE_USER_SUCCESS
+    types.UPDATE_USER_SUCCESS
+  )
+}
+
+export const deleteUser = (userId: number): UserThunk => async (dispatch) => {
+  await sendRequest(
+    `/user/${userId}`,
+    'DELETE',
+    undefined,
+    dispatch,
+    types.DELETE_USER_SUCCESS
   )
 }
 

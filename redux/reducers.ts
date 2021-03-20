@@ -10,22 +10,34 @@ export interface Form {
 }
 
 export interface GlobalState {
-  form: Form
   status: 'INIT' | 'LOADING' | 'SUCCESS' | 'ERROR'
   error: string
   users: User[]
 }
 
 export const initialState: GlobalState = {
-  form: {
-    firstName: '',
-    lastName: '',
-    email: '',
-    password: ''
-  },
   status: 'INIT',
   error: '',
   users: []
+}
+
+const updateUser = (users: User[], updatedUser: User) => {
+  const usersCopy = [...users]
+  usersCopy.splice(
+    usersCopy.findIndex((user) => user.id === updatedUser.id),
+    1,
+    updatedUser
+  )
+  return usersCopy
+}
+
+const deleteUser = (users: User[], userId: number) => {
+  const usersCopy = [...users]
+  usersCopy.splice(
+    usersCopy.findIndex((user) => user.id === userId),
+    1
+  )
+  return usersCopy
 }
 
 export const reducer: Reducer<GlobalState, AnyAction> = (
@@ -56,10 +68,17 @@ export const reducer: Reducer<GlobalState, AnyAction> = (
         status: 'SUCCESS',
         users: [...state.users, payload]
       }
-    case types.CHANGE_FORM_INPUT:
+    case types.UPDATE_USER_SUCCESS:
       return {
         ...state,
-        form: { ...state.form, [payload.fieldName]: payload.value }
+        status: 'SUCCESS',
+        users: updateUser(state.users, payload)
+      }
+    case types.DELETE_USER_SUCCESS:
+      return {
+        ...state,
+        status: 'SUCCESS',
+        users: deleteUser(state.users, payload)
       }
     case types.RESET:
       return {

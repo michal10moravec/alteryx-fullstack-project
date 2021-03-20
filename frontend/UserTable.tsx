@@ -7,6 +7,8 @@ import TableCell from '@material-ui/core/TableCell'
 import TableBody from '@material-ui/core/TableBody'
 import Paper from '@material-ui/core/Paper'
 import { User } from '../backend/user/User'
+import { ViewEditDialog } from './ViewEditDialog'
+import { ConfirmDeleteDialog } from './ConfirmDeleteDialog'
 
 interface UserTableProps {
   users: User[]
@@ -20,13 +22,21 @@ const UserTable: React.FC<UserTableProps> = ({ users }) => {
           <TableRow>
             <TableCell>Name</TableCell>
             <TableCell>Email</TableCell>
+            <TableCell></TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
           {users.map((user) => (
             <TableRow key={user.id}>
-              <TableCell>{`${user.firstName} ${user.lastName}`}</TableCell>
-              <TableCell>{user.email}</TableCell>
+              <TableCell>
+                <ViewEditDialog user={user} />
+              </TableCell>
+              <TableCell>
+                {user.email}
+              </TableCell>
+              <TableCell align="right">
+                <ConfirmDeleteDialog user={user} />
+              </TableCell>
             </TableRow>
           ))}
         </TableBody>

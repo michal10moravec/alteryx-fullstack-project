@@ -4,6 +4,8 @@ import bodyParser from 'body-parser'
 import { createUser } from './user/create'
 import { getUser, getUsers } from './user/read'
 import { User } from './user/User'
+import { updateUser } from './user/update'
+import { deleteUser } from './user/delete'
 
 const port = parseInt(process.env.PORT ?? '3000', 10)
 const dev = process.env.NODE_ENV !== 'production'
@@ -47,6 +49,37 @@ app.prepare().then(() => {
       } else {
         next(new Error('All user params have to be specified'))
       }
+    } catch (err) {
+      next(err)
+    }
+  })
+
+  server.post('/user/:userId', async (req, res, next) => {
+    try {
+      const userId = parseInt(req.params.userId)
+      if (isNaN(userId)) return next(new Error('User id cannot be parsed'))
+
+      const payload: Partial<Omit<User, 'id'>> = req.body
+      if (
+        payload.firstName &&
+        payload.lastName &&
+        payload.email
+      ) {
+        res.json(await updateUser(userId, payload))
+      } else {
+        next(new Error('All user params have to be specified'))
+      }
+    } catch (err) {
+      next(err)
+    }
+  })
+
+  server.delete('/user/:userId', async (req, res, next) => {
+    try {
+      const userId = parseInt(req.params.userId)
+      if (isNaN(userId)) return next(new Error('User id cannot be parsed'))
+
+      res.json(await deleteUser(userId))
     } catch (err) {
       next(err)
     }

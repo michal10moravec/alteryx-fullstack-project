@@ -5,7 +5,7 @@ import React, { useEffect } from 'react'
 import { getUsers } from '../redux/actions'
 import { initializeStore } from '../redux/store'
 import { useDispatch, useSelector } from 'react-redux'
-import { GlobalState } from 'redux/reducers'
+import { GlobalState } from '../redux/reducers'
 import UserTable from '../frontend/UserTable'
 import CreateUserForm from '../frontend/CreateUserForm'
 

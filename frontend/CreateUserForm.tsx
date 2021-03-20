@@ -1,11 +1,11 @@
-import React from 'react'
-import { useDispatch, useSelector } from 'react-redux'
-import { Form, GlobalState } from '../redux/reducers'
-import { changeFormInput, createUser } from '../redux/actions'
+import React, { useState } from 'react'
+import { useDispatch } from 'react-redux'
+import { createUser } from '../redux/actions'
 import TextField from '@material-ui/core/TextField'
 import Button from '@material-ui/core/Button'
 import AddIcon from '@material-ui/icons/Add'
 import { makeStyles } from '@material-ui/core/styles'
+import { createEmptyUser } from '../backend/user/helpers'
 
 const useStyles = makeStyles((theme) => ({
   form: {
@@ -22,18 +22,21 @@ interface CreateUserFormProps {}
 
 const CreateUserForm: React.FC<CreateUserFormProps> = () => {
   const classes = useStyles()
+  const [state, setState] = useState(createEmptyUser())
 
-  const state = useSelector<GlobalState, Form>((state) => state.form)
   const dispatch = useDispatch()
 
   const onChangeHandler = (
     e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>
   ) => {
-    dispatch(changeFormInput(e.target.id, e.target.value))
+    setState({
+      ...state,
+      [e.target.id]: e.target.value
+    })
   }
 
   const onClickHandler = () => {
-    dispatch(createUser())
+    dispatch(createUser(state))
   }
 
   return (

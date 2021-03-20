@@ -3,13 +3,10 @@ import Container from '@material-ui/core/Container'
 import { makeStyles } from '@material-ui/core/styles'
 import TextField from '@material-ui/core/TextField'
 import Typography from '@material-ui/core/Typography'
-import React from 'react'
-import { initializeStore } from '../redux/store'
-import { useDispatch, useSelector } from 'react-redux'
-import { Form, GlobalState } from '../redux/reducers'
-import { changeFormInput } from '../redux/actions'
+import React, { useState } from 'react'
 import Button from '@material-ui/core/Button'
 import SendIcon from '@material-ui/icons/Send'
+import { createEmptyUser } from '../backend/user/helpers'
 
 const useStyles = makeStyles((theme) => ({
   form: {
@@ -24,14 +21,15 @@ const useStyles = makeStyles((theme) => ({
 
 const SignIn: React.FC = () => {
   const classes = useStyles()
-
-  const state = useSelector<GlobalState, Form>((state) => state.form)
-  const dispatch = useDispatch()
+  const [state, setState] = useState(createEmptyUser())
 
   const onChangeHandler = (
     e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>
   ) => {
-    dispatch(changeFormInput(e.target.id, e.target.value))
+    setState({
+      ...state,
+      [e.target.id]: e.target.value
+    })
   }
 
   return (
@@ -72,16 +70,6 @@ const SignIn: React.FC = () => {
       </Box>
     </Container>
   )
-}
-
-export async function getStaticProps() {
-  const reduxStore = initializeStore()
-
-  return {
-    props: {
-      ...reduxStore.getState()
-    }
-  }
 }
 
 export default SignIn
