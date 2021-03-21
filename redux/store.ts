@@ -1,3 +1,7 @@
+/**
+ * Source: https://github.com/vercel/next.js/blob/canary/examples/with-redux/store.js
+ */
+
 import { useMemo } from 'react'
 import { createStore, applyMiddleware } from 'redux'
 import { composeWithDevTools } from 'redux-devtools-extension'

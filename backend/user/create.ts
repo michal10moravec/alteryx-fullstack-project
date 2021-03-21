@@ -13,6 +13,9 @@ export const create = async (db: Database, newUser: Omit<User, 'id'>) => {
 /**
  * Method creates new user, stores it in a persistent storage and returns the user
  * @param newUser user object with params to create
+ * @param loadDbFunc custom function for loading db
+ * @param saveDbFunc custom function for saving db
+ * @returns user
  */
 export const createUser = async (
   newUser: Omit<User, 'id'>,

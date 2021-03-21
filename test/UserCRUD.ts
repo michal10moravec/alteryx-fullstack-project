@@ -26,7 +26,9 @@ describe('User CRUD', () => {
   it('should create user', async () => {
     const user = await createUser(payload, loadDbMock, saveDbMock)
 
-    expect(payload).to.be.deep.equal(user)
+    expect(payload.firstName).to.be.equal(user.firstName)
+    expect(payload.lastName).to.be.equal(user.lastName)
+    expect(payload.email).to.be.equal(user.email)
     expect(users).to.have.lengthOf(1)
     expect(users).to.deep.include(user)
   })
@@ -34,7 +36,9 @@ describe('User CRUD', () => {
   it('should read user', async () => {
     const user = await getUser(0, loadDbMock)
 
-    expect(payload).to.be.deep.equal(user)
+    expect(payload.firstName).to.be.equal(user.firstName)
+    expect(payload.lastName).to.be.equal(user.lastName)
+    expect(payload.email).to.be.equal(user.email)
     expect(users).to.have.lengthOf(1)
   })
 
@@ -55,7 +59,9 @@ describe('User CRUD', () => {
   it('should update user', async () => {
     const user = await updateUser(updatedPayload, loadDbMock, saveDbMock)
 
-    expect(updatedPayload).to.be.deep.equal(user)
+    expect(updatedPayload.firstName).to.be.equal(user.firstName)
+    expect(updatedPayload.lastName).to.be.equal(user.lastName)
+    expect(updatedPayload.email).to.be.equal(user.email)
     expect(users).to.have.lengthOf(1)
   })
 

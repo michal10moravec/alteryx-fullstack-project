@@ -21,6 +21,11 @@ export const generateUniqueId = (users: User[]) => {
   }
 }
 
+/**
+ * Generates a hash for the specified password and returns it
+ * @param password password to hash
+ * @returns hashed pasword
+ */
 export const hashPassword = (password: string): Promise<string> =>
   new Promise((resolve, _reject) => {
     bcrypt.hash(password, BCRYPT_SALT_ROUNDS, (err, hash) => {
@@ -29,6 +34,12 @@ export const hashPassword = (password: string): Promise<string> =>
     })
   })
 
+/**
+ * Compares unhashed password with a hashed one
+ * @param password unhashed password
+ * @param encryptedPassword hashed pasword
+ * @returns true if passwords match, false otherwise
+ */
 export const comparePasswords = (
   password: string,
   encryptedPassword: string
@@ -40,6 +51,10 @@ export const comparePasswords = (
     })
   })
 
+  /**
+   * Creates empty user object
+   * @returns empty user object
+   */
 export const createEmptyUser = (): User => ({
   id: 0,
   firstName: '',

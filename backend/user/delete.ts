@@ -3,6 +3,9 @@ import { Database, loadDb, saveDb } from '../data/dbOperations'
 /**
  * Method deletes user from db and returns his id
  * @param id user id
+ * @param loadDbFunc custom function for loading db
+ * @param saveDbFunc custom function for saving db
+ * @returns id of deleted user
  */
 export const deleteUser = async (
   id: number,

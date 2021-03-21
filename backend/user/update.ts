@@ -5,6 +5,9 @@ import { Database, loadDb, saveDb } from '../data/dbOperations'
 /**
  * Method updates user according to the id
  * @param payload params that should be updated
+ * @param loadDbFunc custom function for loading db
+ * @param saveDbFunc custom function for saving db
+ * @returns updated user
  */
 export const updateUser = async (
   payload: Partial<User>,
@@ -13,8 +16,13 @@ export const updateUser = async (
 ) => {
   const load = loadDbFunc ? loadDbFunc : loadDb
   const save = saveDbFunc ? saveDbFunc : saveDb
-  
+
   const db = await load()
+
+  const foundExistingEmail = db.users.find(
+    (user) => user.email === payload.email
+  )
+  if (foundExistingEmail) throw new Error('User with this email address already exists')
 
   const foundUserIndex = db.users.findIndex((user) => user.id === payload.id)
   if (foundUserIndex === -1) throw new Error('User not found')

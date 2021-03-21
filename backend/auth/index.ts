@@ -4,6 +4,7 @@ import passport from 'passport'
 import { Strategy } from 'passport-local'
 import { getUser, getUserByEmailAndPassword } from '../user/read'
 import { User } from '../user/User'
+import { validateCreateInputs } from '../user/validators'
 
 export const initAuth = (server: Express) => {
   server.use(passport.initialize())
@@ -40,14 +41,9 @@ export const initAuth = (server: Express) => {
 
   server.post('/signup', async (req, res, next) => {
     try {
-      const payload: Partial<Omit<User, 'id'>> = req.body
-      if (
-        payload.firstName &&
-        payload.lastName &&
-        payload.email &&
-        payload.password
-      ) {
-        res.json(await createUser(payload as Omit<User, 'id'>))
+      const validatedUser = validateCreateInputs(req.body)
+      if (validatedUser) {
+        res.json(await createUser(validatedUser))
       } else {
         next(new Error('All user params have to be specified'))
       }

@@ -3,7 +3,9 @@ import { comparePasswords } from './helpers'
 
 /**
  * Method returns user according to the user id
- * @param id user id
+ * @param id
+ * @param loadDbFunc custom function for loading db
+ * @returns
  */
 export const getUser = async (
   id: number,
@@ -23,6 +25,8 @@ export const getUser = async (
  * Method returns user according to the user email and password
  * @param email email
  * @param password password
+ * @param loadDbFunc custom function for loading db
+ * @returns user
  */
 export const getUserByEmailAndPassword = async (
   email: string,
@@ -43,6 +47,8 @@ export const getUserByEmailAndPassword = async (
 
 /**
  * Method returns all users
+ * @param loadDbFunc custom function for loading db
+ * @returns users
  */
 export const getUsers = async (
   loadDbFunc?: (dbFilePath?: string | undefined) => Promise<Database>
