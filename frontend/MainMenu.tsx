@@ -57,7 +57,7 @@ const MainMenu = () => {
     <AppBar position="static">
       <Toolbar>
         <Typography variant="h6" className={classes.title}>
-          Users
+          {router.route === '/' ? 'Users' : ''}
         </Typography>
         {user && (
           <>

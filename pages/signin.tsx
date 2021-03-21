@@ -7,6 +7,7 @@ import React, { useState } from 'react'
 import Button from '@material-ui/core/Button'
 import SendIcon from '@material-ui/icons/Send'
 import { useRouter } from 'next/router'
+import NextLink from 'next/link'
 
 const useStyles = makeStyles((theme) => ({
   form: {
@@ -57,43 +58,53 @@ const SignIn: React.FC = () => {
   }
 
   return (
-    <Container maxWidth="sm">
-      <Box my={4}>
-        <Typography variant="h4" component="h1" align="center">
-          Sign In
-        </Typography>
-        <form className={classes.form} noValidate autoComplete="off">
-          <TextField
-            required
-            fullWidth
-            id="email"
-            label="Email address"
-            variant="outlined"
-            value={state.email}
-            onChange={onChangeHandler}
-          />
-          <TextField
-            required
-            fullWidth
-            id="password"
-            type="password"
-            label="Password"
-            variant="outlined"
-            value={state.password}
-            onChange={onChangeHandler}
-          />
-          <Button
-            variant="contained"
-            color="primary"
-            fullWidth
-            endIcon={<SendIcon />}
-            onClick={onSubmitHandler}
-          >
-            Sign in
-          </Button>
-        </form>
-      </Box>
-    </Container>
+    <>
+      <Container maxWidth="sm">
+        <Box my={4}>
+          <Typography variant="h4" component="h1" align="center">
+            Sign In
+          </Typography>
+          <form className={classes.form} noValidate autoComplete="off">
+            <TextField
+              required
+              fullWidth
+              id="email"
+              label="Email address"
+              variant="outlined"
+              value={state.email}
+              onChange={onChangeHandler}
+            />
+            <TextField
+              required
+              fullWidth
+              id="password"
+              type="password"
+              label="Password"
+              variant="outlined"
+              value={state.password}
+              onChange={onChangeHandler}
+            />
+            <Button
+              variant="contained"
+              color="primary"
+              fullWidth
+              endIcon={<SendIcon />}
+              onClick={onSubmitHandler}
+            >
+              Sign in
+            </Button>
+          </form>
+        </Box>
+      </Container>
+      <Container maxWidth="sm">
+        <Box my={4}>
+          <Typography align="center">
+            Don't have an account?{' '}
+            <NextLink href="/signup">Create an account</NextLink>
+          </Typography>
+        </Box>
+      </Container>
+    </>
   )
 }
 

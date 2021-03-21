@@ -7,6 +7,7 @@ import React, { useState } from 'react'
 import Button from '@material-ui/core/Button'
 import SendIcon from '@material-ui/icons/Send'
 import { createEmptyUser } from '../backend/user/helpers'
+import NextLink from 'next/link'
 
 const useStyles = makeStyles((theme) => ({
   form: {
@@ -33,60 +34,69 @@ const SignUp: React.FC = () => {
   }
 
   return (
-    <Container maxWidth="sm">
-      <Box my={4}>
-        <Typography variant="h4" component="h1" align="center">
-          Create your account
-        </Typography>
-        <form className={classes.form} noValidate autoComplete="off">
-          <TextField
-            required
-            fullWidth
-            id="firstName"
-            label="First name"
-            variant="outlined"
-            value={state.firstName}
-            onChange={onChangeHandler}
-          />
-          <TextField
-            required
-            fullWidth
-            id="lastName"
-            label="Last name"
-            variant="outlined"
-            value={state.lastName}
-            onChange={onChangeHandler}
-          />
-          <TextField
-            required
-            fullWidth
-            id="email"
-            label="Email address"
-            variant="outlined"
-            value={state.email}
-            onChange={onChangeHandler}
-          />
-          <TextField
-            required
-            fullWidth
-            id="password"
-            type="password"
-            label="Password"
-            variant="outlined"
-            value={state.password}
-            onChange={onChangeHandler}
-          />
-          <Button
-            variant="contained"
-            color="primary"
-            fullWidth
-            endIcon={<SendIcon />}
-          >
-            Create an account
-          </Button>
-        </form>
-      </Box>
-    </Container>
+    <>
+      <Container maxWidth="sm">
+        <Box my={4}>
+          <Typography variant="h4" component="h1" align="center">
+            Create your account
+          </Typography>
+          <form className={classes.form} noValidate autoComplete="off">
+            <TextField
+              required
+              fullWidth
+              id="firstName"
+              label="First name"
+              variant="outlined"
+              value={state.firstName}
+              onChange={onChangeHandler}
+            />
+            <TextField
+              required
+              fullWidth
+              id="lastName"
+              label="Last name"
+              variant="outlined"
+              value={state.lastName}
+              onChange={onChangeHandler}
+            />
+            <TextField
+              required
+              fullWidth
+              id="email"
+              label="Email address"
+              variant="outlined"
+              value={state.email}
+              onChange={onChangeHandler}
+            />
+            <TextField
+              required
+              fullWidth
+              id="password"
+              type="password"
+              label="Password"
+              variant="outlined"
+              value={state.password}
+              onChange={onChangeHandler}
+            />
+            <Button
+              variant="contained"
+              color="primary"
+              fullWidth
+              endIcon={<SendIcon />}
+            >
+              Create an account
+            </Button>
+          </form>
+        </Box>
+      </Container>
+      <Container maxWidth="sm">
+        <Box my={4}>
+          <Typography align="center">
+            Already have an account? <NextLink href="/signin">Sign in</NextLink>
+          </Typography>
+        </Box>
+      </Container>
+    </>
   )
 }
 
