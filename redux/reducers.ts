@@ -72,21 +72,21 @@ export const reducer: Reducer<GlobalState, AnyAction> = (
       return {
         ...state,
         status: 'SUCCESS',
-        successMessage: `User ${payload.firstName} ${payload.lastName} has been created`,
+        successMessage: `User has been created`,
         users: [...state.users, payload]
       }
     case types.UPDATE_USER_SUCCESS:
       return {
         ...state,
         status: 'SUCCESS',
-        successMessage: `User ${payload.firstName} ${payload.lastName} has been updated`,
+        successMessage: `User has been updated`,
         users: updateUser(state.users, payload)
       }
     case types.DELETE_USER_SUCCESS:
       return {
         ...state,
         status: 'SUCCESS',
-        successMessage: `User ${payload.firstName} ${payload.lastName} has been removed`,
+        successMessage: `User has been removed`,
         users: deleteUser(state.users, payload)
       }
     case types.CLEAR_MESSAGES:

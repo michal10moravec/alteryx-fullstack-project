@@ -4,14 +4,13 @@ import { hashPassword } from './helpers'
 
 /**
  * Method updates user according to the id
- * @param id user id
  * @param payload params that should be updated
  */
-export const updateUser = async (id: number, payload: Partial<User>) => {
+export const updateUser = async (payload: Partial<User>) => {
   const data = await fs.promises.readFile(DB_FILE_PATH, 'utf8')
   const db: Database = JSON.parse(data)
 
-  const foundUserIndex = db.users.findIndex((user) => user.id === id)
+  const foundUserIndex = db.users.findIndex((user) => user.id === payload.id)
   if (foundUserIndex === -1) throw new Error('User not found')
   const foundUser = db.users[foundUserIndex]
 

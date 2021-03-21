@@ -8,6 +8,11 @@ import { User } from './user/User'
 import { updateUser } from './user/update'
 import { deleteUser } from './user/delete'
 import { initPassport } from './passport'
+import {
+  validateCreateInputs,
+  validateUpdateInputs,
+  validateUserId
+} from './user/helpers'
 
 const port = parseInt(process.env.PORT ?? '3000', 10)
 const dev = process.env.NODE_ENV !== 'production'
@@ -47,10 +52,12 @@ app.prepare().then(() => {
 
   server.get('/user/:userId', authMiddleware, async (req, res, next) => {
     try {
-      const userId = parseInt(req.params.userId)
-      if (isNaN(userId)) return next(new Error('User id cannot be parsed'))
-
-      res.json(await getUser(userId))
+      const validatedUserId = validateUserId(req.params)
+      if (validatedUserId !== false) {
+        res.json(await getUser(validatedUserId))
+      } else {
+        next(new Error('User id cannot be parsed'))
+      }
     } catch (err) {
       next(err)
     }
@@ -58,14 +65,9 @@ app.prepare().then(() => {
 
   server.put('/user', authMiddleware, async (req, res, next) => {
     try {
-      const payload: Partial<Omit<User, 'id'>> = req.body
-      if (
-        payload.firstName &&
-        payload.lastName &&
-        payload.email &&
-        payload.password
-      ) {
-        res.json(await createUser(payload as Omit<User, 'id'>))
+      const validatedUser = validateCreateInputs(req.body)
+      if (validatedUser) {
+        res.json(await createUser(validatedUser))
       } else {
         next(new Error('All user params have to be specified'))
       }
@@ -76,12 +78,9 @@ app.prepare().then(() => {
 
   server.post('/user/:userId', authMiddleware, async (req, res, next) => {
     try {
-      const userId = parseInt(req.params.userId)
-      if (isNaN(userId)) return next(new Error('User id cannot be parsed'))
-
-      const payload: Partial<Omit<User, 'id'>> = req.body
-      if (payload.firstName && payload.lastName && payload.email) {
-        res.json(await updateUser(userId, payload))
+      const validatedUser = validateUpdateInputs(req.params, req.body)
+      if (validatedUser !== false) {
+        res.json(await updateUser(validatedUser))
       } else {
         next(new Error('All user params have to be specified'))
       }
@@ -92,10 +91,12 @@ app.prepare().then(() => {
 
   server.delete('/user/:userId', authMiddleware, async (req, res, next) => {
     try {
-      const userId = parseInt(req.params.userId)
-      if (isNaN(userId)) return next(new Error('User id cannot be parsed'))
-
-      res.json(await deleteUser(userId))
+      const validatedUserId = validateUserId(req.params)
+      if (validatedUserId !== false) {
+        res.json(await deleteUser(validatedUserId))
+      } else {
+        next(new Error('User id cannot be parsed'))
+      }
     } catch (err) {
       next(err)
     }
