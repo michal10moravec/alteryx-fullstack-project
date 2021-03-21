@@ -1,6 +1,7 @@
 import { User } from './User'
 
 export const validateUserId = (payload: any): number | false => {
+  if (!payload) return false
   const userId = parseInt(payload.userId)
   return isNaN(userId) ? false : userId
 }
@@ -30,8 +31,8 @@ export const validateUpdateInputs = (
   userIdPayload: any,
   dataPayload: any
 ): User | false => {
-  const userId = parseInt(userIdPayload.userId)
-  if (isNaN(userId)) return false
+  const userId = validateUserId(userIdPayload)
+  if (userId === false) return false
   if (
     dataPayload &&
     dataPayload.firstName &&
