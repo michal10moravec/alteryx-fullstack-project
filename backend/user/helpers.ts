@@ -1,6 +1,6 @@
 import { User } from './User'
-// export const BCRYPT_SALT_ROUNDS = 10
-// import bcrypt from 'bcrypt'
+export const BCRYPT_SALT_ROUNDS = 10
+import bcrypt from 'bcryptjs'
 
 /**
  * Generates unique user id
@@ -23,11 +23,10 @@ export const generateUniqueId = (users: User[]) => {
 
 export const hashPassword = (password: string): Promise<string> =>
   new Promise((resolve, _reject) => {
-    resolve(password)
-    // bcrypt.hash(password, BCRYPT_SALT_ROUNDS, (err, hash) => {
-    //   if (err) return reject(err)
-    //   resolve(hash)
-    // })
+    bcrypt.hash(password, BCRYPT_SALT_ROUNDS, (err, hash) => {
+      if (err) return _reject(err)
+      resolve(hash)
+    })
   })
 
 export const comparePasswords = (
@@ -35,11 +34,10 @@ export const comparePasswords = (
   encryptedPassword: string
 ): Promise<boolean> =>
   new Promise((resolve, _reject) => {
-    resolve(password === encryptedPassword)
-    // bcrypt.compare(password, encryptedPassword, (err, same) => {
-    //   if (err) return reject(err)
-    //   resolve(same)
-    // })
+    bcrypt.compare(password, encryptedPassword, (err, same) => {
+      if (err) return _reject(err)
+      resolve(same)
+    })
   })
 
 export const createEmptyUser = (): User => ({

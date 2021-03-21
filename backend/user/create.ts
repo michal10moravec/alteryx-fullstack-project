@@ -24,7 +24,7 @@ export const createUser = async (
 
   const db = await load()
   const existingUser = db.users.find((user) => user.email === newUser.email)
-  if (existingUser) throw new Error('User already exists')
+  if (existingUser) throw new Error('User with this email address already exists')
 
   const createdUser = await create(db, newUser)
   db.users.push(createdUser)

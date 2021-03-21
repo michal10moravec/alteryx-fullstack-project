@@ -68,7 +68,10 @@ export const authMiddleware = (
   next: NextFunction
 ) => {
   const passportSession = req.session as any
-  if (passportSession.passport && passportSession.passport.user) {
+  if (
+    passportSession.passport &&
+    typeof passportSession.passport.user !== 'undefined'
+  ) {
     next()
   } else {
     res.redirect('/signin')
