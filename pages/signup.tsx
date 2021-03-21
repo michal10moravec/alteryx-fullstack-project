@@ -9,6 +9,7 @@ import SendIcon from '@material-ui/icons/Send'
 import { createEmptyUser } from '../backend/user/helpers'
 import NextLink from 'next/link'
 import { useRouter } from 'next/router'
+import Alert from '@material-ui/lab/Alert'
 
 const useStyles = makeStyles((theme) => ({
   form: {
@@ -18,12 +19,21 @@ const useStyles = makeStyles((theme) => ({
     '& .MuiButton-root': {
       margin: theme.spacing(1)
     }
+  },
+  bottomBox: {
+    display: 'flex',
+    flexDirection: 'column',
+    placeItems: 'center',
+    '& .MuiAlert-root': {
+      margin: theme.spacing(1)
+    }
   }
 }))
 
 const SignUp: React.FC = () => {
   const classes = useStyles()
   const [state, setState] = useState(createEmptyUser())
+  const [error, setError] = useState('')
   const router = useRouter()
 
   const onChangeHandler = (
@@ -35,27 +45,49 @@ const SignUp: React.FC = () => {
     })
   }
 
+  const validateInputs = () => {
+    for (const value of Object.values(state)) {
+      if (value.length === 0) {
+        setError('Please fill in all requred fields')
+        return false
+      }
+    }
+
+    return true
+  }
+
   const onSubmitHandler: React.MouseEventHandler<HTMLButtonElement> = async (
     e
   ) => {
     e.preventDefault()
 
-    try {
-      const response = await fetch('/signup', {
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        credentials: 'same-origin',
-        method: 'POST',
-        body: JSON.stringify(state)
-      })
+    if (validateInputs()) {
+      try {
+        const response = await fetch('/signup', {
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          credentials: 'same-origin',
+          method: 'POST',
+          body: JSON.stringify(state)
+        })
 
-      if (response.ok && response.status === 200) {
-        router.push('/signin')
+        if (response.ok && response.status === 200) {
+          router.push('/signin')
+        } else {
+          const err = await response.text()
+          setError(err)
+        }
+      } catch (err) {
+        console.error(err)
       }
-    } catch (err) {
-      console.error(err)
     }
+  }
+
+  const onAlertCloseHandler: (
+    event: React.SyntheticEvent<Element, Event>
+  ) => void = () => {
+    setError('')
   }
 
   return (
@@ -65,7 +97,7 @@ const SignUp: React.FC = () => {
           <Typography variant="h4" component="h1" align="center">
             Create your account
           </Typography>
-          <form className={classes.form} noValidate autoComplete="off">
+          <form className={classes.form} autoComplete="off">
             <TextField
               required
               fullWidth
@@ -116,7 +148,16 @@ const SignUp: React.FC = () => {
         </Box>
       </Container>
       <Container maxWidth="sm">
-        <Box my={4}>
+        <Box className={classes.bottomBox} my={4}>
+          {error && (
+            <Alert
+              onClose={onAlertCloseHandler}
+              severity="error"
+              variant="filled"
+            >
+              Error: {error}
+            </Alert>
+          )}
           <Typography align="center">
             Already have an account? <NextLink href="/signin">Sign in</NextLink>
           </Typography>
