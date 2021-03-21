@@ -9,15 +9,21 @@ export interface Form {
   password: string
 }
 
+export type StatusType = 'INIT' | 'LOADING' | 'SUCCESS' | 'ERROR'
+
 export interface GlobalState {
-  status: 'INIT' | 'LOADING' | 'SUCCESS' | 'ERROR'
-  error: string
+  status: StatusType
+  errorMessage: string
+  successMessage: string
+  user: User | undefined
   users: User[]
 }
 
 export const initialState: GlobalState = {
   status: 'INIT',
-  error: '',
+  errorMessage: '',
+  successMessage: '',
+  user: undefined,
   users: []
 }
 
@@ -54,7 +60,7 @@ export const reducer: Reducer<GlobalState, AnyAction> = (
       return {
         ...state,
         status: 'ERROR',
-        error: payload
+        errorMessage: payload
       }
     case types.LOAD_USERS_SUCCESS:
       return {
@@ -66,19 +72,33 @@ export const reducer: Reducer<GlobalState, AnyAction> = (
       return {
         ...state,
         status: 'SUCCESS',
+        successMessage: `User ${payload.firstName} ${payload.lastName} has been created`,
         users: [...state.users, payload]
       }
     case types.UPDATE_USER_SUCCESS:
       return {
         ...state,
         status: 'SUCCESS',
+        successMessage: `User ${payload.firstName} ${payload.lastName} has been updated`,
         users: updateUser(state.users, payload)
       }
     case types.DELETE_USER_SUCCESS:
       return {
         ...state,
         status: 'SUCCESS',
+        successMessage: `User ${payload.firstName} ${payload.lastName} has been removed`,
         users: deleteUser(state.users, payload)
+      }
+    case types.CLEAR_MESSAGES:
+      return {
+        ...state,
+        successMessage: '',
+        errorMessage: ''
+      }
+    case types.LOGOUT:
+      return {
+        ...state,
+        user: undefined
       }
     case types.RESET:
       return {

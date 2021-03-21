@@ -31,6 +31,13 @@ export const hashPassword = (password: string): Promise<string> =>
     // })
   })
 
+export const comparePasswords = async (
+  password1: string,
+  password2: string
+) => {
+  return password1 === password2
+}
+
 export const createEmptyUser = (): User => ({
   id: 0,
   firstName: '',

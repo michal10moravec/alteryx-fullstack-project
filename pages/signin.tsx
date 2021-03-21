@@ -6,7 +6,7 @@ import Typography from '@material-ui/core/Typography'
 import React, { useState } from 'react'
 import Button from '@material-ui/core/Button'
 import SendIcon from '@material-ui/icons/Send'
-import { createEmptyUser } from '../backend/user/helpers'
+import { useRouter } from 'next/router'
 
 const useStyles = makeStyles((theme) => ({
   form: {
@@ -21,7 +21,8 @@ const useStyles = makeStyles((theme) => ({
 
 const SignIn: React.FC = () => {
   const classes = useStyles()
-  const [state, setState] = useState(createEmptyUser())
+  const [state, setState] = useState({ email: '', password: '' })
+  const router = useRouter()
 
   const onChangeHandler = (
     e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>
@@ -30,6 +31,29 @@ const SignIn: React.FC = () => {
       ...state,
       [e.target.id]: e.target.value
     })
+  }
+
+  const onSubmitHandler: React.MouseEventHandler<HTMLButtonElement> = async (
+    e
+  ) => {
+    e.preventDefault()
+
+    try {
+      const response = await fetch('/login', {
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        credentials: 'same-origin',
+        method: 'POST',
+        body: `email=${state.email}&password=${state.password}`
+      })
+
+      if (response.ok && response.status === 200) {
+        router.push('/')
+      }
+    } catch (err) {
+      console.error(err)
+    }
   }
 
   return (
@@ -63,6 +87,7 @@ const SignIn: React.FC = () => {
             color="primary"
             fullWidth
             endIcon={<SendIcon />}
+            onClick={onSubmitHandler}
           >
             Sign in
           </Button>

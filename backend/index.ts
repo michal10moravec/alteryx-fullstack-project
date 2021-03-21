@@ -1,23 +1,43 @@
 import express, { NextFunction, Request, Response } from 'express'
 import next from 'next'
 import bodyParser from 'body-parser'
+import session from 'express-session'
 import { createUser } from './user/create'
 import { getUser, getUsers } from './user/read'
 import { User } from './user/User'
 import { updateUser } from './user/update'
 import { deleteUser } from './user/delete'
+import { initPassport } from './passport'
 
 const port = parseInt(process.env.PORT ?? '3000', 10)
 const dev = process.env.NODE_ENV !== 'production'
 const app = next({ dev })
 const handle = app.getRequestHandler()
 
+const authMiddleware = (req: Request, res: Response, next: NextFunction) => {
+  const passportSession = req.session as any
+  if (passportSession.passport && passportSession.passport.user) {
+    next()
+  } else {
+    res.redirect('/signin')
+  }
+}
+
 app.prepare().then(() => {
   const server = express()
 
   server.use(bodyParser.json())
+  server.use(bodyParser.urlencoded({ extended: false }))
+  server.use(
+    session({
+      secret: 'alteryx-fullstack-project',
+      resave: false,
+      saveUninitialized: false
+    })
+  )
+  initPassport(server)
 
-  server.get('/users', async (_req, res, next) => {
+  server.get('/users', authMiddleware, async (_req, res, next) => {
     try {
       res.json(await getUsers())
     } catch (err) {
@@ -25,7 +45,7 @@ app.prepare().then(() => {
     }
   })
 
-  server.get('/user/:userId', async (req, res, next) => {
+  server.get('/user/:userId', authMiddleware, async (req, res, next) => {
     try {
       const userId = parseInt(req.params.userId)
       if (isNaN(userId)) return next(new Error('User id cannot be parsed'))
@@ -36,7 +56,7 @@ app.prepare().then(() => {
     }
   })
 
-  server.put('/user', async (req, res, next) => {
+  server.put('/user', authMiddleware, async (req, res, next) => {
     try {
       const payload: Partial<Omit<User, 'id'>> = req.body
       if (
@@ -54,17 +74,13 @@ app.prepare().then(() => {
     }
   })
 
-  server.post('/user/:userId', async (req, res, next) => {
+  server.post('/user/:userId', authMiddleware, async (req, res, next) => {
     try {
       const userId = parseInt(req.params.userId)
       if (isNaN(userId)) return next(new Error('User id cannot be parsed'))
 
       const payload: Partial<Omit<User, 'id'>> = req.body
-      if (
-        payload.firstName &&
-        payload.lastName &&
-        payload.email
-      ) {
+      if (payload.firstName && payload.lastName && payload.email) {
         res.json(await updateUser(userId, payload))
       } else {
         next(new Error('All user params have to be specified'))
@@ -74,7 +90,7 @@ app.prepare().then(() => {
     }
   })
 
-  server.delete('/user/:userId', async (req, res, next) => {
+  server.delete('/user/:userId', authMiddleware, async (req, res, next) => {
     try {
       const userId = parseInt(req.params.userId)
       if (isNaN(userId)) return next(new Error('User id cannot be parsed'))
@@ -83,6 +99,10 @@ app.prepare().then(() => {
     } catch (err) {
       next(err)
     }
+  })
+
+  server.get('/', authMiddleware, (req, res) => {
+    return app.render(req, res, '/')
   })
 
   server.all('*', (req, res) => {

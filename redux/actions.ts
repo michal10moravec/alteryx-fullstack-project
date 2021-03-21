@@ -16,6 +16,7 @@ const sendRequest = async (
     headers: {
       'Content-Type': 'application/json'
     },
+    credentials: 'same-origin',
     method,
     body: payload ? JSON.stringify(payload) : undefined
   })
@@ -72,4 +73,8 @@ export const changeFormInput = (fieldName: string, value: string) => ({
   payload: { fieldName, value }
 })
 
-export const resetCount = () => ({ type: types.RESET })
+export const clearMessages = () => ({ type: types.CLEAR_MESSAGES })
+
+export const logout = () => ({ type: types.LOGOUT })
+
+export const reset = () => ({ type: types.RESET })
