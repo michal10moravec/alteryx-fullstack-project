@@ -28,8 +28,8 @@ export const initPassport = (server: Express) => {
       .then((user) => {
         done(null, user)
       })
-      .catch((err) => {
-        done('Deserialization error', err)
+      .catch(() => {
+        done(new Error('Deserialization error'))
       })
   })
 

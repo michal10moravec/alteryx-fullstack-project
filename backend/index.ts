@@ -109,11 +109,17 @@ app.prepare().then(() => {
     return handle(req, res)
   })
 
-  server.use(
-    (err: Error, _req: Request, res: Response, _next: NextFunction) => {
-      res.status(500).send(err.message)
+  server.use((err: Error, req: Request, res: Response, _next: NextFunction) => {
+    if (err.message === 'Deserialization error') {
+      //this happens when user deletes his own user record
+      //therefore user profile cannot be retrieved from db
+      //at this point we have to logout the user and redirect him
+      req.logout()
+      res.redirect('/signin')
+      return
     }
-  )
+    res.status(500).send(err.message)
+  })
 
   server.listen(port, () => {
     console.log(`> Ready on http://localhost:${port}`)
