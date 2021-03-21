@@ -1,14 +1,17 @@
-import { Database, DB_FILE_PATH } from './User'
-import fs from 'fs'
+import { Database, loadDb } from '../data/dbOperations'
 import { comparePasswords } from './helpers'
 
 /**
- * Method return user according to the user id
+ * Method returns user according to the user id
  * @param id user id
  */
-export const getUser = async (id: number) => {
-  const data = await fs.promises.readFile(DB_FILE_PATH, 'utf8')
-  const db: Database = JSON.parse(data)
+export const getUser = async (
+  id: number,
+  loadDbFunc?: (dbFilePath?: string | undefined) => Promise<Database>
+) => {
+  const load = loadDbFunc ? loadDbFunc : loadDb
+  
+  const db = await load()
 
   const foundUser = db.users.find((user) => user.id === id)
   if (!foundUser) throw new Error('User not found')
@@ -17,16 +20,17 @@ export const getUser = async (id: number) => {
 }
 
 /**
- * Method return user according to the user email and password
+ * Method returns user according to the user email and password
  * @param email email
  * @param password password
  */
 export const getUserByEmailAndPassword = async (
   email: string,
-  password: string
+  password: string,
+  loadDbFunc?: (dbFilePath?: string | undefined) => Promise<Database>
 ) => {
-  const data = await fs.promises.readFile(DB_FILE_PATH, 'utf8')
-  const db: Database = JSON.parse(data)
+  const load = loadDbFunc ? loadDbFunc : loadDb
+  const db = await load()
 
   const foundUser = db.users.find(
     (user) => user.email === email && comparePasswords(user.password, password)
@@ -39,9 +43,11 @@ export const getUserByEmailAndPassword = async (
 /**
  * Method returns all users
  */
-export const getUsers = async () => {
-  const data = await fs.promises.readFile(DB_FILE_PATH, 'utf8')
-  const db: Database = JSON.parse(data)
+export const getUsers = async (
+  loadDbFunc?: (dbFilePath?: string | undefined) => Promise<Database>
+) => {
+  const load = loadDbFunc ? loadDbFunc : loadDb
+  const db = await load()
 
   return db.users
 }

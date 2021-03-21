@@ -1,4 +1,5 @@
-import { BCRYPT_SALT_ROUNDS, User } from './User'
+import { User } from './User'
+// export const BCRYPT_SALT_ROUNDS = 10
 // import bcrypt from 'bcrypt'
 
 /**
@@ -21,9 +22,7 @@ export const generateUniqueId = (users: User[]) => {
 }
 
 export const hashPassword = (password: string): Promise<string> =>
-  new Promise((resolve, reject) => {
-    BCRYPT_SALT_ROUNDS
-    reject
+  new Promise((resolve, _reject) => {
     resolve(password)
     // bcrypt.hash(password, BCRYPT_SALT_ROUNDS, (err, hash) => {
     //   if (err) return reject(err)
@@ -45,52 +44,3 @@ export const createEmptyUser = (): User => ({
   email: '',
   password: ''
 })
-
-export const validateUserId = (payload: any): number | false => {
-  const userId = parseInt(payload.userId)
-  return isNaN(userId) ? false : userId
-}
-
-export const validateCreateInputs = (
-  payload: any
-): Omit<User, 'id'> | false => {
-  if (
-    payload &&
-    payload.firstName &&
-    payload.lastName &&
-    payload.email &&
-    payload.password
-  ) {
-    return {
-      firstName: payload.firstName,
-      lastName: payload.lastName,
-      email: payload.email,
-      password: payload.password
-    }
-  }
-
-  return false
-}
-
-export const validateUpdateInputs = (
-  userIdPayload: any,
-  dataPayload: any
-): User | false => {
-  const userId = parseInt(userIdPayload.userId)
-  if (isNaN(userId)) return false
-  if (
-    dataPayload &&
-    dataPayload.firstName &&
-    dataPayload.lastName &&
-    dataPayload.email
-  ) {
-    return {
-      id: userId,
-      firstName: dataPayload.firstName,
-      lastName: dataPayload.lastName,
-      email: dataPayload.email,
-      password: dataPayload.password
-    }
-  }
-  return false
-}

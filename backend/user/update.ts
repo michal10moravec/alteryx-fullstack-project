@@ -1,14 +1,20 @@
-import { Database, DB_FILE_PATH, User } from './User'
-import fs from 'fs'
+import { User } from './User'
 import { hashPassword } from './helpers'
+import { Database, loadDb, saveDb } from '../data/dbOperations'
 
 /**
  * Method updates user according to the id
  * @param payload params that should be updated
  */
-export const updateUser = async (payload: Partial<User>) => {
-  const data = await fs.promises.readFile(DB_FILE_PATH, 'utf8')
-  const db: Database = JSON.parse(data)
+export const updateUser = async (
+  payload: Partial<User>,
+  loadDbFunc?: (dbFilePath?: string | undefined) => Promise<Database>,
+  saveDbFunc?: (db: Database, dbFilePath?: string | undefined) => Promise<void>
+) => {
+  const load = loadDbFunc ? loadDbFunc : loadDb
+  const save = saveDbFunc ? saveDbFunc : saveDb
+  
+  const db = await load()
 
   const foundUserIndex = db.users.findIndex((user) => user.id === payload.id)
   if (foundUserIndex === -1) throw new Error('User not found')
@@ -30,7 +36,7 @@ export const updateUser = async (payload: Partial<User>) => {
   }
 
   db.users.splice(foundUserIndex, 1, sanitizedUser)
-  await fs.promises.writeFile(DB_FILE_PATH, JSON.stringify(db, null, 2))
+  await save(db)
 
   return sanitizedUser
 }
