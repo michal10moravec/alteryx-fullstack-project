@@ -23,6 +23,9 @@ export const createUser = async (
   const save = saveDbFunc ? saveDbFunc : saveDb
 
   const db = await load()
+  const existingUser = db.users.find((user) => user.email === newUser.email)
+  if (existingUser) throw new Error('User already exists')
+
   const createdUser = await create(db, newUser)
   db.users.push(createdUser)
   await save(db)

@@ -1,10 +1,11 @@
-import { Express } from 'express'
+import { createUser } from '../user/create'
+import { Express, Request, Response, NextFunction } from 'express'
 import passport from 'passport'
 import { Strategy } from 'passport-local'
-import { getUser, getUserByEmailAndPassword } from './user/read'
-import { User } from './user/User'
+import { getUser, getUserByEmailAndPassword } from '../user/read'
+import { User } from '../user/User'
 
-export const initPassport = (server: Express) => {
+export const initAuth = (server: Express) => {
   server.use(passport.initialize())
   server.use(passport.session())
   passport.use(
@@ -37,8 +38,39 @@ export const initPassport = (server: Express) => {
     res.sendStatus(200)
   })
 
+  server.post('/signup', async (req, res, next) => {
+    try {
+      const payload: Partial<Omit<User, 'id'>> = req.body
+      if (
+        payload.firstName &&
+        payload.lastName &&
+        payload.email &&
+        payload.password
+      ) {
+        res.json(await createUser(payload as Omit<User, 'id'>))
+      } else {
+        next(new Error('All user params have to be specified'))
+      }
+    } catch (err) {
+      next(err)
+    }
+  })
+
   server.get('/logout', (req, res) => {
     req.logout()
     res.sendStatus(200)
   })
+}
+
+export const authMiddleware = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const passportSession = req.session as any
+  if (passportSession.passport && passportSession.passport.user) {
+    next()
+  } else {
+    res.redirect('/signin')
+  }
 }

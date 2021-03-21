@@ -30,12 +30,17 @@ export const hashPassword = (password: string): Promise<string> =>
     // })
   })
 
-export const comparePasswords = async (
-  password1: string,
-  password2: string
-) => {
-  return password1 === password2
-}
+export const comparePasswords = (
+  password: string,
+  encryptedPassword: string
+): Promise<boolean> =>
+  new Promise((resolve, _reject) => {
+    resolve(password === encryptedPassword)
+    // bcrypt.compare(password, encryptedPassword, (err, same) => {
+    //   if (err) return reject(err)
+    //   resolve(same)
+    // })
+  })
 
 export const createEmptyUser = (): User => ({
   id: 0,

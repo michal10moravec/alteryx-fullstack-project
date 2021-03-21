@@ -10,7 +10,7 @@ export const getUser = async (
   loadDbFunc?: (dbFilePath?: string | undefined) => Promise<Database>
 ) => {
   const load = loadDbFunc ? loadDbFunc : loadDb
-  
+
   const db = await load()
 
   const foundUser = db.users.find((user) => user.id === id)
@@ -32,10 +32,11 @@ export const getUserByEmailAndPassword = async (
   const load = loadDbFunc ? loadDbFunc : loadDb
   const db = await load()
 
-  const foundUser = db.users.find(
-    (user) => user.email === email && comparePasswords(user.password, password)
-  )
+  const foundUser = db.users.find((user) => user.email === email)
   if (!foundUser) throw new Error('User not found')
+  if (!(await comparePasswords(password, foundUser.password))) {
+    throw new Error('Wrong password')
+  }
 
   return foundUser
 }
