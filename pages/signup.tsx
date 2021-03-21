@@ -8,6 +8,7 @@ import Button from '@material-ui/core/Button'
 import SendIcon from '@material-ui/icons/Send'
 import { createEmptyUser } from '../backend/user/helpers'
 import NextLink from 'next/link'
+import { useRouter } from 'next/router'
 
 const useStyles = makeStyles((theme) => ({
   form: {
@@ -23,6 +24,7 @@ const useStyles = makeStyles((theme) => ({
 const SignUp: React.FC = () => {
   const classes = useStyles()
   const [state, setState] = useState(createEmptyUser())
+  const router = useRouter()
 
   const onChangeHandler = (
     e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>
@@ -31,6 +33,29 @@ const SignUp: React.FC = () => {
       ...state,
       [e.target.id]: e.target.value
     })
+  }
+
+  const onSubmitHandler: React.MouseEventHandler<HTMLButtonElement> = async (
+    e
+  ) => {
+    e.preventDefault()
+
+    try {
+      const response = await fetch('/signup', {
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        credentials: 'same-origin',
+        method: 'POST',
+        body: JSON.stringify(state)
+      })
+
+      if (response.ok && response.status === 200) {
+        router.push('/signin')
+      }
+    } catch (err) {
+      console.error(err)
+    }
   }
 
   return (
@@ -83,6 +108,7 @@ const SignUp: React.FC = () => {
               color="primary"
               fullWidth
               endIcon={<SendIcon />}
+              onClick={onSubmitHandler}
             >
               Create an account
             </Button>

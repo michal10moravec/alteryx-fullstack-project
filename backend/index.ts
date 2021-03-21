@@ -105,6 +105,24 @@ app.prepare().then(() => {
     return app.render(req, res, '/')
   })
 
+  server.post('/signup', async (req, res, next) => {
+    try {
+      const payload: Partial<Omit<User, 'id'>> = req.body
+      if (
+        payload.firstName &&
+        payload.lastName &&
+        payload.email &&
+        payload.password
+      ) {
+        res.json(await createUser(payload as Omit<User, 'id'>))
+      } else {
+        next(new Error('All user params have to be specified'))
+      }
+    } catch (err) {
+      next(err)
+    }
+  })
+
   server.all('*', (req, res) => {
     return handle(req, res)
   })
